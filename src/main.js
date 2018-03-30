@@ -12,6 +12,7 @@ const MAX_CNT_OF_BOXES_IN_COLUMN = 7;
 const DELAY_OF_BOOST = 10000.0;
 const BOOST = 0.9;
 const CNT_OF_POINTS_TO_CREATE_STAR = 200;
+const DIST_BETWEEN_PARTITION_AND_COLUMN = 20;
 
 let TIME_OF_STAR_LIVING = 1500;
 let DELAY_OF_REMOVING = 1753;
@@ -34,6 +35,7 @@ let isAnythingRemoved = false;
 let queueOfBoxes = [];
 let eps = 3;
 let cntOfExtraBoxes = 0;
+let partitions;
 
 let game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
@@ -46,6 +48,7 @@ function preload() {
     game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('star', 'assets/star.png');
+    game.load.image('partition', 'assets/partition.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 
 }
@@ -104,6 +107,13 @@ function fillColumns() {
         let currentQueue = [];
         queueOfBoxes.push(currentQueue);
         let cx = WIDTH_OF_COLUMN * (i - 1) + WIDTH_OF_COLUMN / 2;
+        
+        //left, right partitions
+        let partitionLeft = partitions.create(cx - COAL_BOX_WIDTH / 2 - DIST_BETWEEN_PARTITION_AND_COLUMN, MAP_HEIGHT / 2, 'partition');
+        partitionLeft.body.kinematic = true;
+        let partitionRight = partitions.create(cx + COAL_BOX_WIDTH / 2 + DIST_BETWEEN_PARTITION_AND_COLUMN, MAP_HEIGHT / 2, 'partition');
+        partitionRight.body.kinematic = true;
+        
         let curCntOfColumns = getRandomInt(2, 5);
         let cy = LEVEL_Y_OF_LOW_GROUND - HEIGHT_OF_GROUND / 2 - COAL_BOX_HEIGHT / 2;
         for (let j = 1; j <= curCntOfColumns; ++j) {
@@ -126,7 +136,7 @@ function launchPhysics() {
     game.physics.p2.gravity.y = GRAVITY_Y;
     game.physics.p2.restitution = 0;
     game.physics.p2.applyDamping = true; 
-    game.physics.p2.friction = 10000000;
+    game.physics.p2.friction = 10.0;
 }
 
 function createBackground() {
@@ -180,6 +190,7 @@ let stars, star;
 let starsCollisionGroup, platformsCollisionGroup;
 let playerCollisionGroup;
 
+
 function createStars() {
     stars = game.add.group();
     stars.physicsBodyType = Phaser.Physics.P2JS;
@@ -201,10 +212,17 @@ function starTouchingWithHighGround() {
 
 }
 
+function createPartitions() { 
+    partitions = game.add.group();
+    partitions.physicsBodyType = Phaser.Physics.P2JS;
+    partitions.enableBody = true;
+}
+
 function create() {
     launchPhysics();
     createBackground();
     createPlatforms();
+    createPartitions();
     createCoal();
     createPlayer();
     createStars();
