@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/repo
+
+    # TODO: dependency cache
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run build
+
+
