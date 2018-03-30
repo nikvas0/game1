@@ -9,34 +9,33 @@ const HEIGHT_OF_GROUND = 32;
 const LEVEL_Y_OF_HIGH_GROUND = 60;
 const LEVEL_Y_OF_LOW_GROUND = MAP_HEIGHT - 50;
 const MAX_CNT_OF_BOXES_IN_COLUMN = 7;
-var DELAY_OF_REMOVING = 1753;
-var DELAY_OF_CREATING = 1879;
-var DELAY_OF_BALANCE = 700;
-var GRAVITY_Y = 300;
-var SPEED_OF_PLAYER = 320;
-var FRICTION = 10000000;
 const DELAY_OF_BOOST = 10000.0;
 const BOOST = 0.9;
-var TIME_OF_STAR_LIVING = 1500;
 const CNT_OF_POINTS_TO_CREATE_STAR = 200;
 
+let TIME_OF_STAR_LIVING = 1500;
+let DELAY_OF_REMOVING = 1753;
+let DELAY_OF_CREATING = 1879;
+let DELAY_OF_BALANCE = 700;
+let GRAVITY_Y = 300;
+let SPEED_OF_PLAYER = 320;
+let FRICTION = 10000000;
 
+let timeToUseKeyboard = 0.0;
+let timeToRemove = 1000.0;
+let timeToCreate = 1000.0;
+let timeToBoost = 0.0;
+let timeToKillStar = 0.0;
+let timeToDieForStar = 0.0;
+let nextStableTime = 0.0;
+let numberOfCurrentColumn = 1;
+let playerIsMoving = false;
+let isAnythingRemoved = false;
+let queueOfBoxes = [];
+let eps = 3;
+let cntOfExtraBoxes = 0;
 
-var timeToUseKeyboard = 0.0;
-var timeToRemove = 1000.0;
-var timeToCreate = 1000.0;
-var timeToBoost = 0.0;
-var timeToKillStar = 0.0;
-var timeForDieForStar = 0.0;
-var nextStableTime = 0.0;
-var numberOfCurrentColumn = 1;
-var playerIsMoving = false;
-var isAnythingRemoved = false;
-var queueOfBoxes = [];
-var eps = 3;
-var cntOfExtraBoxes = 0;
-
-var game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+let game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 function getRandomInt(l, r) {
 	return Math.floor(Math.random() * (r - l) + l);
@@ -51,12 +50,12 @@ function preload() {
 
 }
 
-var player;
-var platforms, highGround, lowGround;
-var cursors;
-var coal;
-var score = 0;
-var scoreText;
+let player;
+let platforms, highGround, lowGround;
+let cursors;
+let coal;
+let score = 0;
+let scoreText;
 
 
 function pushBox(i) {
@@ -119,7 +118,7 @@ function fillColumns() {
 
 }
 
-var leftKey, rightKey;
+let leftKey, rightKey;
 
 function launchPhysics() {
 	game.physics.startSystem(Phaser.Physics.P2JS);
@@ -162,8 +161,7 @@ function createPlayer() {
 	player.body.kinematic = true;
 }
 
-var space;
-
+let space;
 
 function createKeyboard() {
 	leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
@@ -172,24 +170,21 @@ function createKeyboard() {
     cursors = game.input.keyboard.createCursorKeys();
 }
 
-var cntOfExtraBoxesText;
+let cntOfExtraBoxesText;
 function createScore() {
 	scoreText = game.add.text(MAP_WIDTH - 80, 1, 'score: 0', { fontSize: '10px', fill: '#000' });
 	cntOfExtraBoxesText = game.add.text(MAP_WIDTH - 180, 1, 'Extra boxes: 0', { fontSize: '10px', fill: '#000' });
 }
 
-var stars, star;
-var starsCollisionGroup, platformsCollisionGroup;
-var playerCollisionGroup;
+let stars, star;
+let starsCollisionGroup, platformsCollisionGroup;
+let playerCollisionGroup;
 
 function createStars() {
 	stars = game.add.group();
 	stars.physicsBodyType = Phaser.Physics.P2JS;
 	stars.enableBody = true;
-	
 }
-
-
 
 function launchCollides() {
 	starsCollisionGroup = game.physics.p2.createCollisionGroup();
@@ -221,8 +216,8 @@ function create() {
 	createScore();
 }
 
-var cntOfPushes = 0;
-var haveTheStar = false;
+let cntOfPushes = 0;
+let haveTheStar = false;
 function collectStar(body1, body2) {
 	cntOfPushes += 1;
 	if (cntOfPushes % 2 == 1) {
@@ -244,19 +239,11 @@ function createStar() {
 	star.body.collides([playerCollisionGroup, platformsCollisionGroup]);
 }
 
-
 function checkStar() {
 	if (haveTheStar && game.time.now >= timeToDieForStar) {
 		star.kill();
 		haveTheStar = false;
 	}
-}
-
-function addCollids() {
-	/* var hitPlatform = game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(stars, platforms);
-	game.physics.arcade.collide(coal, platforms);
-	game.physics.arcade.collide(coal, coal); */
 }
 
 function tryToRemoveAnything() {
@@ -310,8 +297,6 @@ function tryToMovePlayer() {
 		playerIsMoving = false;
 		player.animations.play('turn');
 	}
-	
-
 }
 
 
