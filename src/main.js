@@ -18,7 +18,7 @@ let TIME_OF_STAR_LIVING = 1500;
 let DELAY_OF_REMOVING = 1753;
 let DELAY_OF_CREATING = 1879;
 let DELAY_OF_BALANCE = 700;
-let GRAVITY_Y = 300;
+let GRAVITY_Y = 1500;
 let SPEED_OF_PLAYER = 320;
 let FRICTION = 10000000;
 
@@ -136,7 +136,7 @@ function launchPhysics() {
     game.physics.p2.gravity.y = GRAVITY_Y;
     game.physics.p2.restitution = 0;
     game.physics.p2.applyDamping = true; 
-    game.physics.p2.friction = 10.0;
+    game.physics.p2.friction = 0.0;
 }
 
 function createBackground() {
@@ -244,7 +244,10 @@ function collectStar(body1, body2) {
     haveTheStar = false;
     updateScore(CNT_OF_COLUMNS * 10);
     for (let i = 1; i <= CNT_OF_COLUMNS; ++i) {
-        pushBoxUnder(i);
+        let fl = getRandomInt(0, 2);
+        if (fl <= 1) {
+            pushBoxUnder(i);
+        }
     }
     star.kill();
 } 
