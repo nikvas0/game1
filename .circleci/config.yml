@@ -17,5 +17,14 @@ jobs:
       - store_artifacts:
           path: ~/repo/build.zip
           destination: build
+      - add_ssh_keys:
+          fingerprints:
+            - "23:a6:f5:f1:a9:db:50:34:8c:ab:94:e5:3a:c8:05:d7"
+      - run:
+          name: Deploy to server
+          command: |
+            ssh circleci@srv1.arthurx.space
+            cd denis
+            ./all.sh
 
 
