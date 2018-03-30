@@ -354,7 +354,7 @@ function finishPreload() {
 }
 
 function finishGame() {
-    finishScore = game.add.text(200, 200, 'Total score: ' + score, { fontSize: '60px', fill: '#FFF' });
+    let finishScore = game.add.text(200, 200, 'Total score: ' + score, { fontSize: '60px', fill: '#FFF' });
     game.update = finishUpdate();
     
     //game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: finishPreload, create: finishCreate, update: finishUpdate });
