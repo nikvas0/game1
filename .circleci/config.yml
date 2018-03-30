@@ -13,8 +13,16 @@ jobs:
           command: 'sudo npm install -g npm@latest'
       - run: npm ci
       - run: npm run build
+      - run: zip -r build.zip build
       - store_artifacts:
-          path: ~/repo/build
+          path: ~/repo/build.zip
           destination: build
+      - add_ssh_keys:
+          fingerprints:
+            - "23:a6:f5:f1:a9:db:50:34:8c:ab:94:e5:3a:c8:05:d7"
+      - run:
+          name: Deploy to server
+          command: |
+            ssh -o "StrictHostKeyChecking no" circleci@srv1.arthurx.space "export CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM && cd denis && ./all.sh"
 
 
