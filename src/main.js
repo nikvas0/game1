@@ -38,7 +38,7 @@ let cntOfExtraBoxes = 0;
 let game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 function getRandomInt(l, r) {
-	return Math.floor(Math.random() * (r - l) + l);
+	return Math.round(Math.random() * (r - l) + l);
 }
 
 function preload() {
@@ -90,10 +90,10 @@ function pushBoxUnder(i) {
 }
 
 function popBox(i) {
-	if (queueOfBoxes[i].length < 1) {
+	if (queueOfBoxes[i-1].length < 1) {
 		finishGame();
 	} else {
-		let currentBox = queueOfBoxes[i].shift();
+		let currentBox = queueOfBoxes[i-1].shift();
 		coal.remove(currentBox, true);
 	}
 }
@@ -248,7 +248,7 @@ function checkStar() {
 
 function tryToRemoveAnything() {
 	if (game.time.now >= timeToRemove) {
-		let index = getRandomInt(0, CNT_OF_COLUMNS - 1);
+		let index = getRandomInt(1, CNT_OF_COLUMNS);
 		popBox(index);
 		timeToRemove = game.time.now + DELAY_OF_REMOVING;
 		nextStableTime = game.time.now + DELAY_OF_BALANCE;
