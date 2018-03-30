@@ -162,6 +162,8 @@ function createPlayer() {
 	player.body.kinematic = true;
 }
 
+var space;
+
 
 function createKeyboard() {
 	leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
