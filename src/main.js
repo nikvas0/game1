@@ -43,10 +43,10 @@ function getRandomInt(l, r) {
 
 function preload() {
 	game.load.image('coalBox', 'assets/coalBox.png');
-    game.load.image('sky', 'assets/sky.png');
-    game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+	game.load.image('sky', 'assets/sky.png');
+	game.load.image('ground', 'assets/platform.png');
+	game.load.image('star', 'assets/star.png');
+	game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 
 }
 
@@ -167,7 +167,7 @@ function createKeyboard() {
 	leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
 	rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 	space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    cursors = game.input.keyboard.createCursorKeys();
+	cursors = game.input.keyboard.createCursorKeys();
 }
 
 let cntOfExtraBoxesText;
@@ -321,7 +321,7 @@ function update() {
     //  Collide the player and the stars with the platforms
 	checkStar();
 	tryToBoost();
-    tryToRemoveAnything();
+	tryToRemoveAnything();
 	tryToCreate();
 	tryToMovePlayer();
 }
@@ -333,7 +333,7 @@ function updateCountOfExtraBoxes(delta) {
 
 function updateScore(delta) {
 	let border = (Math.floor(score / CNT_OF_POINTS_TO_CREATE_STAR) + 1) * CNT_OF_POINTS_TO_CREATE_STAR;
-    score += delta;
+	score += delta;
 	if (score >= border) {
 		updateCountOfExtraBoxes(1);
 		createStar();
