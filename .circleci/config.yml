@@ -23,6 +23,6 @@ jobs:
       - run:
           name: Deploy to server
           command: |
-            ssh -o "StrictHostKeyChecking no" circleci@srv1.arthurx.space 'cd denis && ./all.sh'
+            ssh -o "StrictHostKeyChecking no" circleci@srv1.arthurx.space "export CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM && cd denis && ./all.sh"
 
 
