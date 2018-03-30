@@ -17,7 +17,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "phaser": "^3.2.1",
     "phaser-ce": "^2.9.3"
   },
   "devDependencies": {
