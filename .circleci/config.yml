@@ -13,8 +13,9 @@ jobs:
           command: 'sudo npm install -g npm@latest'
       - run: npm ci
       - run: npm run build
+      - run: zip -r build.zip build
       - store_artifacts:
-          path: ~/repo/build
+          path: ~/repo/build.zip
           destination: build
 
 
