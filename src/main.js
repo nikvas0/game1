@@ -1,5 +1,5 @@
-const MAP_WIDTH = 800;
-const MAP_HEIGHT = 600;
+const MAP_WIDTH = 1000;
+const MAP_HEIGHT = 800;
 const CNT_OF_COLUMNS = 5;
 const COAL_BOX_WIDTH = 81;
 const COAL_BOX_HEIGHT = 65;
@@ -13,14 +13,16 @@ const DELAY_OF_BOOST = 10000.0;
 const BOOST = 0.9;
 const CNT_OF_POINTS_TO_CREATE_STAR = 200;
 const DIST_BETWEEN_PARTITION_AND_COLUMN = 20;
+const UNDER_MAP_FIELD = 600;
 
 let TIME_OF_STAR_LIVING = 1500;
 let DELAY_OF_REMOVING = 1753;
 let DELAY_OF_CREATING = 1879;
 let DELAY_OF_BALANCE = 700;
-let GRAVITY_Y = 1500;
-let SPEED_OF_PLAYER = 320;
+let GRAVITY_Y = 300;
+let SPEED_OF_PLAYER = MAP_WIDTH * 2 / 5;
 let FRICTION = 10000000;
+
 
 let timeToUseKeyboard = 0.0;
 let timeToRemove = 1000.0;
@@ -38,7 +40,7 @@ let cntOfExtraBoxes = 0;
 let partitions;
 
 let Swipe = require('phaser-swipe');
-let game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+let game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT + UNDER_MAP_FIELD, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 function getRandomInt(l, r) {
     return Math.round(Math.random() * (r - l) + l);
@@ -116,6 +118,9 @@ function fillColumns() {
         let partitionRight = partitions.create(cx + COAL_BOX_WIDTH / 2 + DIST_BETWEEN_PARTITION_AND_COLUMN, MAP_HEIGHT / 2, 'partition');
         partitionRight.body.kinematic = true;
 
+        partitionLeft.scale.setTo(1, 0.8 * MAP_HEIGHT / partitionLeft.height);
+        partitionRight.scale.setTo(1, 0.8 * MAP_HEIGHT / partitionRight.height);
+
         let curCntOfColumns = getRandomInt(2, 5);
         let cy = LEVEL_Y_OF_LOW_GROUND - HEIGHT_OF_GROUND / 2 - COAL_BOX_HEIGHT / 2;
         for (let j = 1; j <= curCntOfColumns; ++j) {
@@ -143,7 +148,8 @@ function launchPhysics() {
 
 function createBackground() {
     game.stage.backgroundColor = "#4488AA";
-    game.add.sprite(0, 0,'sky');
+    let sky = game.add.sprite(0, 0,'sky');
+    sky.scale.setTo(MAP_WIDTH / sky.width, MAP_HEIGHT / sky.height);
 }
 
 function createPlatforms() {
@@ -154,6 +160,9 @@ function createPlatforms() {
     lowGround.body.kinematic = true;
     highGround = platforms.create(MAP_WIDTH / 2, LEVEL_Y_OF_HIGH_GROUND, 'ground');
     highGround.body.kinematic = true;
+
+    lowGround.scale.setTo(2, 1);
+    highGround.scale.setTo(2, 1);
 }
 
 function createCoal() {
@@ -381,7 +390,7 @@ function finishPreload() {
 }
 
 function finishGame() {
-    let finishScore = game.add.text(200, 200, 'Total score: ' + score, { fontSize: '60px', fill: '#FFF' });
+    let finishScore = game.add.text(MAP_WIDTH / 2 - 200, MAP_HEIGHT / 2 - 40, 'Total score: ' + score, { fontSize: '60px', fill: '#FFF' });
     game.update = finishUpdate();
 
     //game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: finishPreload, create: finishCreate, update: finishUpdate });
