@@ -142,7 +142,8 @@ function launchPhysics() {
 }
 
 function createBackground() {
-    game.add.sprite(0, 0, 'sky');
+    game.stage.backgroundColor = "#4488AA";
+    game.add.sprite(0, 0,'sky');
 }
 
 function createPlatforms() {
