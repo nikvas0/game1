@@ -37,6 +37,7 @@ let eps = 3;
 let cntOfExtraBoxes = 0;
 let partitions;
 
+let Swipe = require('phaser-swipe');
 let game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 function getRandomInt(l, r) {
@@ -59,6 +60,7 @@ let cursors;
 let coal;
 let score = 0;
 let scoreText;
+let swipe;
 
 
 function pushBox(i) {
@@ -107,13 +109,13 @@ function fillColumns() {
         let currentQueue = [];
         queueOfBoxes.push(currentQueue);
         let cx = WIDTH_OF_COLUMN * (i - 1) + WIDTH_OF_COLUMN / 2;
-        
+
         //left, right partitions
         let partitionLeft = partitions.create(cx - COAL_BOX_WIDTH / 2 - DIST_BETWEEN_PARTITION_AND_COLUMN, MAP_HEIGHT / 2, 'partition');
         partitionLeft.body.kinematic = true;
         let partitionRight = partitions.create(cx + COAL_BOX_WIDTH / 2 + DIST_BETWEEN_PARTITION_AND_COLUMN, MAP_HEIGHT / 2, 'partition');
         partitionRight.body.kinematic = true;
-        
+
         let curCntOfColumns = getRandomInt(2, 5);
         let cy = LEVEL_Y_OF_LOW_GROUND - HEIGHT_OF_GROUND / 2 - COAL_BOX_HEIGHT / 2;
         for (let j = 1; j <= curCntOfColumns; ++j) {
@@ -135,7 +137,7 @@ function launchPhysics() {
     game.physics.p2.setImpactEvents(true);
     game.physics.p2.gravity.y = GRAVITY_Y;
     game.physics.p2.restitution = 0;
-    game.physics.p2.applyDamping = true; 
+    game.physics.p2.applyDamping = true;
     game.physics.p2.friction = 0.0;
 }
 
@@ -173,7 +175,8 @@ function createPlayer() {
 
 let space;
 
-function createKeyboard() {
+function createInput() {
+    swipe = new Swipe(game);
     leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
     rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
     space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -204,7 +207,7 @@ function launchCollides() {
     game.physics.p2.updateBoundsCollisionGroup();
     highGround.body.setCollisionGroup(platformsCollisionGroup);
     //star.body.stati = true;
-    player.body.setCollisionGroup(playerCollisionGroup);    
+    player.body.setCollisionGroup(playerCollisionGroup);
     //player.body.collides(starsCollisionGroup, collectStar, this);
 }
 
@@ -212,7 +215,7 @@ function starTouchingWithHighGround() {
 
 }
 
-function createPartitions() { 
+function createPartitions() {
     partitions = game.add.group();
     partitions.physicsBodyType = Phaser.Physics.P2JS;
     partitions.enableBody = true;
@@ -230,7 +233,7 @@ function create() {
     player.body.collides(starsCollisionGroup, collectStar, this);
     highGround.body.collides(starsCollisionGroup, starTouchingWithHighGround, this);
     fillColumns();
-    createKeyboard();
+    createInput();
     createScore();
 }
 
@@ -250,7 +253,7 @@ function collectStar(body1, body2) {
         }
     }
     star.kill();
-} 
+}
 
 function createStar() {
     haveTheStar = true;
@@ -292,7 +295,9 @@ function tryToCreate() {
 }
 
 function tryToMovePlayer() {
-    if (leftKey.isDown && game.time.now >= timeToUseKeyboard && numberOfCurrentColumn != 1 && !playerIsMoving) {
+    let swipeDirection = swipe.check();
+
+    if ((leftKey.isDown || (swipeDirection !== null && swipeDirection.direction == swipe.DIRECTION_LEFT)) && game.time.now >= timeToUseKeyboard && numberOfCurrentColumn != 1 && !playerIsMoving) {
         //player.setVelocityX(-SPEED_OF_PLAYER);
         player.body.velocity.x = -SPEED_OF_PLAYER;
         numberOfCurrentColumn -= 1;
@@ -300,18 +305,18 @@ function tryToMovePlayer() {
         timeToUseKeyboard = game.time.now + WIDTH_OF_COLUMN / SPEED_OF_PLAYER * 1000;
         playerIsMoving = true;
     }
-    else if (rightKey.isDown && game.time.now >= timeToUseKeyboard && numberOfCurrentColumn != CNT_OF_COLUMNS && !playerIsMoving) {
+    else if ((rightKey.isDown || (swipeDirection !== null && swipeDirection.direction == swipe.DIRECTION_RIGHT)) && game.time.now >= timeToUseKeyboard && numberOfCurrentColumn != CNT_OF_COLUMNS && !playerIsMoving) {
         //player.setVelocityX(SPEED_OF_PLAYER);
         player.body.velocity.x = SPEED_OF_PLAYER;
         numberOfCurrentColumn += 1;
         player.animations.play('right', true);
         timeToUseKeyboard = game.time.now + WIDTH_OF_COLUMN / SPEED_OF_PLAYER * 1000;
         playerIsMoving = true;
-    } else if (space.isDown && game.time.now >= timeToUseKeyboard && cntOfExtraBoxes != 0) {
+    } else if ((space.isDown || (swipeDirection !== null && swipeDirection.direction == swipe.DIRECTION_DOWN)) && game.time.now >= timeToUseKeyboard && cntOfExtraBoxes != 0) {
         updateCountOfExtraBoxes(-1);
         pushBoxUnder(numberOfCurrentColumn);
     }
-    
+
     if (playerIsMoving == true && game.time.now >= timeToUseKeyboard) {
         //player.setVelocityX(0);
         player.body.velocity.x = 0;
@@ -377,6 +382,6 @@ function finishPreload() {
 function finishGame() {
     let finishScore = game.add.text(200, 200, 'Total score: ' + score, { fontSize: '60px', fill: '#FFF' });
     game.update = finishUpdate();
-    
+
     //game = new Phaser.Game(MAP_WIDTH, MAP_HEIGHT, Phaser.AUTO, '', { preload: finishPreload, create: finishCreate, update: finishUpdate });
 }
